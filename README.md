@@ -1,10 +1,10 @@
-# VocalAIze: Voice-Powered AI Assistant
+# vocAIyze: Voice-Powered AI Assistant
 
-VocalAIze is a comprehensive voice-to-voice AI assistant that leverages OpenAI's powerful APIs to enable natural voice interactions. It combines speech-to-text, large language models, and text-to-speech capabilities to create seamless conversational experiences.
+vocAIyze is a comprehensive voice-to-voice AI assistant that leverages OpenAI's powerful APIs to enable natural voice interactions. It combines speech-to-text, large language models, and text-to-speech capabilities to create seamless conversational experiences.
 
 ## Features
 
-- **Voice Input/Output**: Speak naturally to VocalAIze and hear AI-generated responses in high-quality voices
+- **Voice Input/Output**: Speak naturally to vocAIyze and hear AI-generated responses in high-quality voices
 - **Advanced Language Processing**: Powered by OpenAI's language models for context-aware responses
 - **Multi-Mode Operation**: Use in interactive conversation mode or batch process files
 - **Business Assistant Capabilities**: 
@@ -24,8 +24,8 @@ VocalAIze is a comprehensive voice-to-voice AI assistant that leverages OpenAI's
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/VocalAIze.git
-   cd VocalAIze
+   git clone https://github.com/yourusername/vocAIyze.git
+   cd vocAIyze
    ```
 
 2. **Create and activate a virtual environment** (recommended):
@@ -57,7 +57,7 @@ VocalAIze is a comprehensive voice-to-voice AI assistant that leverages OpenAI's
 
 ### Interactive Mode
 
-Run VocalAIze in interactive conversation mode:
+Run vocAIyze in interactive conversation mode:
 
 ```bash
 python main.py
@@ -96,7 +96,7 @@ python stt.py
 
 ## Architecture
 
-VocalAIze consists of three main components:
+vocAIyze consists of three main components:
 
 1. **Speech-to-Text (STT)**: Converts spoken language to text using OpenAI's Whisper model
 2. **Language Model (LLM)**: Processes text input and generates appropriate responses using OpenAI's GPT models
@@ -106,7 +106,7 @@ VocalAIze consists of three main components:
 
 ### Voices
 
-VocalAIze supports multiple voices for text-to-speech:
+vocAIyze supports multiple voices for text-to-speech:
 - alloy (default)
 - echo
 - fable
@@ -126,7 +126,7 @@ You can customize the knowledge base by editing the `knowledge_base.json` file, 
 
 ## API Integration
 
-VocalAIze is designed to easily integrate with:
+vocAIyze is designed to easily integrate with:
 - CRM systems (through the `update_crm` method)
 - Email services (through the `send_email` method)
 - Calendar/scheduling systems (through the `schedule_follow_up` method)

@@ -4,7 +4,7 @@ import json
 import os
 from typing import Dict, List, Any, Optional
 
-logger = logging.getLogger("VocalAIze.LLM")
+logger = logging.getLogger("vocAIyze.LLM")
 
 class LLM:
     def __init__(self, api_key: str):

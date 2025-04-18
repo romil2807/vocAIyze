@@ -8,7 +8,7 @@ import tempfile
 import sys
 sys.path.append('/usr/bin/ffmpeg')  # Ensure ffmpeg is in path
 
-logger = logging.getLogger("VocalAIze.TTS")
+logger = logging.getLogger("vocAIyze.TTS")
 
 class TextToSpeech:
     def __init__(self, api_key: str):
@@ -99,4 +99,4 @@ if __name__ == "__main__":
     for voice in tts.available_voices:
         print(f"Playing sample with voice: {voice}")
         tts.set_voice(voice)
-        tts.text_to_speech(f"This is a sample of the {voice} voice from VocalAIze.")
+        tts.text_to_speech(f"This is a sample of the {voice} voice from vocAIyze.")

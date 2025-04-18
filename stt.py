@@ -6,7 +6,7 @@ import logging
 from pathlib import Path
 import tempfile
 
-logger = logging.getLogger("VocalAIze.STT")
+logger = logging.getLogger("vocAIyze.STT")
 
 class SpeechToText:
     def __init__(self, api_key: str):

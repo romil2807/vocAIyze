@@ -1,8 +1,8 @@
-# VocalAIze: Transforming Voice-AI Interactions for Business
+# VocaAIze: Transforming Voice-AI Interactions for Business
 
 ## Executive Summary
 
-VocalAIze is a versatile voice-AI platform that transforms how businesses interact with artificial intelligence. By combining cutting-edge speech recognition, natural language processing, and voice synthesis, VocalAIze delivers a seamless voice-to-voice AI assistant that helps businesses enhance customer interactions, improve employee productivity, and gather actionable insights from conversations.
+vocAIyze is a versatile voice-AI platform that transforms how businesses interact with artificial intelligence. By combining cutting-edge speech recognition, natural language processing, and voice synthesis, vocAIyze delivers a seamless voice-to-voice AI assistant that helps businesses enhance customer interactions, improve employee productivity, and gather actionable insights from conversations.
 
 ## Key Value Propositions
 
@@ -62,10 +62,10 @@ VocalAIze is a versatile voice-AI platform that transforms how businesses intera
 ## Next Steps
 
 1. **Discovery Call**: Let us understand your specific business needs
-2. **Custom Demo**: See VocalAIze in action with your use cases
+2. **Custom Demo**: See vocAIyze in action with your use cases
 3. **Pilot Program**: Start with a limited deployment to measure results
 4. **Full Implementation**: Roll out across your organization with our support team
 
 ---
 
-Contact us at sales@vocalAIze.com to schedule your discovery call today.
+Contact us at sales@vocAIyze.com to schedule your discovery call today.

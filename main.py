@@ -13,15 +13,15 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler("vocalAIze.log"),
+        logging.FileHandler("vocAIyze.log"),
         logging.StreamHandler()
     ]
 )
-logger = logging.getLogger("VocalAIze")
+logger = logging.getLogger("vocAIyze")
 
 def main():
     # Parse command line arguments
-    parser = argparse.ArgumentParser(description="VocalAIze - Voice-based AI Assistant")
+    parser = argparse.ArgumentParser(description="vocAIyze - Voice-based AI Assistant")
     parser.add_argument("--mode", choices=["interactive", "file"], default="interactive",
                         help="Run in interactive mode or process from file")
     parser.add_argument("--input", help="Input file path (for file mode)")
@@ -90,7 +90,7 @@ def run_interactive_mode(llm, tts, stt):
     logger.info("Starting interactive mode")
     
     # Greeting
-    greeting = "Hello, I'm VocalAIze. How can I assist you today?"
+    greeting = "Hello, I'm vocAIyze. How can I assist you today?"
     print(greeting)
     tts.text_to_speech(greeting)
     
@@ -108,7 +108,7 @@ def run_interactive_mode(llm, tts, stt):
             print(f"You: {user_input}")
             
             if user_input.lower() in ["exit", "quit", "goodbye", "bye"]:
-                farewell = "Thank you for using VocalAIze. Goodbye!"
+                farewell = "Thank you for using vocAIyze. Goodbye!"
                 print(f"Assistant: {farewell}")
                 tts.text_to_speech(farewell)
                 break
@@ -132,7 +132,7 @@ def run_interactive_mode(llm, tts, stt):
                 conversation_history = conversation_history[-10:]
                 
     except KeyboardInterrupt:
-        print("\nExiting VocalAIze...")
+        print("\nExiting vocAIyze...")
     except Exception as e:
         logger.error(f"Error in interactive mode: {str(e)}")
         print(f"An error occurred: {str(e)}")

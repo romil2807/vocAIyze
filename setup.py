@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="vocalAIze",
+    name="vocAIyze",  # Updated project name
     version="1.0.0",
     packages=find_packages(),
     install_requires=[
@@ -17,7 +17,7 @@ setup(
     python_requires=">=3.8",
     entry_points={
         "console_scripts": [
-            "vocalAIze=main:main",
+            "vocAIyze=main:main",  # Updated entry point
         ],
     },
 )
