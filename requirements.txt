@@ -1,0 +1,5 @@
+openai>=1.1.1
+pyaudio>=0.2.13
+wave>=0.0.2
+pydub>=0.25.1
+python-dotenv>=1.0.0
