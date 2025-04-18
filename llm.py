@@ -162,3 +162,28 @@ class LLM:
         # Simulate updating CRM
         logger.info(f"CRM update for {client_name}: {update_info}")
         return f"CRM updated for {client_name} with: {update_info}"
+
+    def generate_call_script(self, goal: str, language: str = "English") -> str:
+        """
+        Generate a script for a call based on the user's goal and desired language.
+        """
+        try:
+            prompt = f"""
+            Generate a professional script for a call with the following goal: {goal}.
+            Provide the script in {language}.
+            """
+            return self.generate(prompt)
+        except Exception as e:
+            logger.error(f"Error generating call script: {str(e)}")
+            return "Sorry, I couldn't generate the call script. Please try again."
+
+    def translate_text(self, text: str, target_language: str) -> str:
+        """
+        Translate text to the target language using OpenAI's GPT model.
+        """
+        try:
+            prompt = f"Translate the following text to {target_language}: {text}"
+            return self.generate(prompt)
+        except Exception as e:
+            logger.error(f"Error translating text: {str(e)}")
+            return "Sorry, I couldn't translate the text."

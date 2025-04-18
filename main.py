@@ -86,55 +86,78 @@ def process_file_mode(llm, tts, stt, input_path, output_path):
         raise
 
 def run_interactive_mode(llm, tts, stt):
-    """Run an interactive conversation session"""
-    logger.info("Starting interactive mode")
-    
-    # Greeting
-    greeting = "Hello, I'm vocAIyze. How can I assist you today?"
-    print(greeting)
-    tts.text_to_speech(greeting)
-    
+    print("Welcome to vocAIyze Interactive Mode!")
+    print("Choose an option:")
+    print("1. Pre-Call Preparation")
+    print("2. Real-Time Call Assistance")
+    choice = input("> ")
+
+    if choice == "1":
+        pre_call_preparation(llm)
+    elif choice == "2":
+        print("Enter the target language for the call (default: English):")
+        target_language = input("> ") or "English"
+        real_time_call_assistance(llm, tts, stt, target_language)
+    else:
+        print("Invalid choice. Exiting.")
+
+def pre_call_preparation(llm):
+    print("Enter the goal of your call:")
+    goal = input("> ")
+    print("Enter the language for the script (default: English):")
+    language = input("> ") or "English"
+
+    script = llm.generate_call_script(goal, language)
+    print("\nGenerated Call Script:")
+    print(script)
+
+def real_time_call_assistance(llm, tts, stt, target_language="English"):
+    print("Starting real-time call assistance...")
+    print("Press Ctrl+C to exit.")
+
     conversation_history = []
-    
+
     try:
         while True:
-            # Record user input
+            # Record the user's speech
             print("\nListening... (speak now)")
-            audio_path = Path("./user_input.wav")
-            stt.record_audio(str(audio_path), duration=7)
-            
-            # Convert speech to text
-            user_input = stt.speech_to_text(str(audio_path))
+            audio_path = "./user_input.wav"
+            stt.record_audio(audio_path, duration=7)
+
+            # Transcribe the speech to text
+            user_input = stt.speech_to_text(audio_path)
             print(f"You: {user_input}")
-            
-            if user_input.lower() in ["exit", "quit", "goodbye", "bye"]:
-                farewell = "Thank you for using vocAIyze. Goodbye!"
-                print(f"Assistant: {farewell}")
-                tts.text_to_speech(farewell)
-                break
-            
-            # Add to conversation history and generate response
+
+            # Translate the user's input if needed
+            if target_language.lower() != "english":
+                user_input = llm.generate(f"Translate this to English: {user_input}")
+
+            # Add to conversation history
             conversation_history.append({"role": "user", "content": user_input})
-            
-            # Generate context-aware response
+
+            # Generate a response
             prompt = "\n".join([f"{'User' if item['role'] == 'user' else 'Assistant'}: {item['content']}" 
-                               for item in conversation_history])
+                                for item in conversation_history])
             response = llm.generate(prompt)
-            
+
+            # Translate the response back to the target language if needed
+            if target_language.lower() != "english":
+                response = llm.generate(f"Translate this to {target_language}: {response}")
+
             print(f"Assistant: {response}")
             tts.text_to_speech(response)
-            
-            # Add response to history
+
+            # Add the response to conversation history
             conversation_history.append({"role": "assistant", "content": response})
-            
-            # Keep conversation history manageable
+
+            # Keep the conversation history manageable
             if len(conversation_history) > 10:
                 conversation_history = conversation_history[-10:]
-                
+
     except KeyboardInterrupt:
-        print("\nExiting vocAIyze...")
+        print("\nExiting real-time call assistance...")
     except Exception as e:
-        logger.error(f"Error in interactive mode: {str(e)}")
+        logger.error(f"Error during real-time call assistance: {str(e)}")
         print(f"An error occurred: {str(e)}")
 
 if __name__ == "__main__":
