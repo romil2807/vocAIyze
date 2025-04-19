@@ -19,20 +19,13 @@ class TextToSpeech:
         logger.info("TextToSpeech initialized")
 
     def text_to_speech(self, text: str, output_path: str = None):
-        """
-        Convert text to speech using OpenAI's TTS API
-        
-        Args:
-            text: The text to convert to speech
-            output_path: Path to save the audio file (optional)
-        """
         if not text:
             logger.warning("Empty text provided to text_to_speech")
             return
             
         try:
-            # Use provided output path or default
-            file_path = output_path if output_path else self.speech_file_path
+            # Use provided output path or default with absolute path
+            file_path = output_path if output_path else str(Path(__file__).parent.absolute() / "speech.mp3")
             
             # Ensure text isn't too long (API limits)
             if len(text) > 4000:
@@ -46,8 +39,11 @@ class TextToSpeech:
                 input=text
             )
             
-            # Ensure directory exists
+            # Ensure directory exists (create parent directories if needed)
             os.makedirs(os.path.dirname(os.path.abspath(file_path)), exist_ok=True)
+            
+            # Print debug info
+            print(f"Saving speech to: {file_path}")
             
             # Save to file
             response.stream_to_file(file_path)
@@ -55,14 +51,19 @@ class TextToSpeech:
             
             # Play audio if no output path specified (interactive mode)
             if not output_path:
-                sound = AudioSegment.from_file(file_path)
-                play(sound)
+                try:
+                    sound = AudioSegment.from_file(file_path)
+                    play(sound)
+                except Exception as e:
+                    logger.error(f"Error playing audio: {str(e)}")
+                    print(f"Could not play audio: {str(e)}")
                 
             return str(file_path)
                 
         except Exception as e:
             logger.error(f"Error in text_to_speech: {str(e)}")
-            raise
+            print(f"Text-to-speech error: {str(e)}")
+            return None
             
     def set_voice(self, voice_name: str) -> bool:
         """

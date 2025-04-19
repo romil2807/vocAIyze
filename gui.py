@@ -4,6 +4,13 @@ from llm import LLM
 from tts import TextToSpeech
 from stt import SpeechToText
 import os
+from dotenv import load_dotenv
+import threading
+from pathlib import Path
+
+
+# Load environment variables at the start
+load_dotenv()
 
 class VocAIyzeApp:
     def __init__(self, root):
@@ -11,19 +18,24 @@ class VocAIyzeApp:
         self.root.title("vocAIyze - Voice AI Assistant")
         self.root.geometry("600x400")
 
-        # Initialize components
+        # Initialize components with proper error handling
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
-            messagebox.showerror("Error", "OPENAI_API_KEY environment variable not set")
+            messagebox.showerror("Error", "OPENAI_API_KEY not found in .env file")
             self.root.destroy()
             return
-
-        self.llm = LLM(api_key)
-        self.tts = TextToSpeech(api_key)
-        self.stt = SpeechToText(api_key)
-
-        # Create UI elements
-        self.create_widgets()
+        
+        try:
+            self.llm = LLM(api_key)
+            self.tts = TextToSpeech(api_key)
+            self.stt = SpeechToText(api_key)
+            
+            # Create UI elements
+            self.create_widgets()
+        except Exception as e:
+            messagebox.showerror("Initialization Error", f"Failed to initialize components: {str(e)}")
+            self.root.destroy()
+            return
 
     def create_widgets(self):
         # Title Label
@@ -87,56 +99,80 @@ class VocAIyzeApp:
         conversation_text = scrolledtext.ScrolledText(real_time_window, wrap=tk.WORD, width=60, height=10)
         conversation_text.pack(pady=10)
 
-        def start_assistance():
-            target_language = language_entry.get() or "English"
-            conversation_text.insert(tk.END, "Starting real-time call assistance...\n")
-            conversation_text.insert(tk.END, "Press Ctrl+C in the terminal to stop.\n")
+        # Add a status label
+        status_label = tk.Label(real_time_window, text="Ready", font=("Arial", 10))
+        status_label.pack(pady=5)
 
+        # Add a button to start assistance
+        start_button = tk.Button(real_time_window, text="Start Assistance", command=lambda: self.start_assistance(language_entry, conversation_text, status_label))
+        start_button.pack(pady=10)
+
+    def start_assistance(self, language_entry, conversation_text, status_label):
+        target_language = language_entry.get() or "English"
+        conversation_text.insert(tk.END, "Starting real-time call assistance...\n")
+        conversation_history = []
+
+        def record_and_respond():
             try:
-                conversation_history = []
-                while True:
-                    # Record the user's speech
-                    audio_path = "./user_input.wav"
-                    self.stt.record_audio(audio_path, duration=7)
+                # Step 1: Record the user's speech
+                status_label.config(text="Recording... (speak now)")
+                conversation_text.update()
+                print("Recording audio...")
+                audio_path = str(Path(__file__).parent.absolute() / "user_input.wav")
+                self.stt.record_audio(audio_path, duration=7)
+                print(f"Audio recorded: {audio_path}")
 
-                    # Transcribe the speech to text
-                    user_input = self.stt.speech_to_text(audio_path)
-                    conversation_text.insert(tk.END, f"You: {user_input}\n")
+                # Step 2: Transcribe the speech to text
+                status_label.config(text="Processing...")
+                conversation_text.update()
+                print("Transcribing audio...")
+                user_input = self.stt.speech_to_text(audio_path)
+                print(f"Transcription: {user_input}")
+                conversation_text.insert(tk.END, f"You: {user_input}\n")
 
-                    # Translate the user's input if needed
-                    if target_language.lower() != "english":
-                        user_input = self.llm.generate(f"Translate this to English: {user_input}")
+                # Step 3: Translate the user's input if needed
+                if target_language.lower() != "english":
+                    print(f"Translating input to English...")
+                    user_input = self.llm.generate(f"Translate this to English: {user_input}")
+                    print(f"Translated input: {user_input}")
 
-                    # Add to conversation history
-                    conversation_history.append({"role": "user", "content": user_input})
+                # Step 4: Add to conversation history
+                conversation_history.append({"role": "user", "content": user_input})
 
-                    # Generate a response
-                    prompt = "\n".join([f"{'User' if item['role'] == 'user' else 'Assistant'}: {item['content']}" 
-                                        for item in conversation_history])
-                    response = self.llm.generate(prompt)
+                # Step 5: Generate a response
+                print("Generating response...")
+                prompt = "\n".join([f"{'User' if item['role'] == 'user' else 'Assistant'}: {item['content']}" 
+                                    for item in conversation_history])
+                response = self.llm.generate(prompt)
+                print(f"Generated response: {response}")
 
-                    # Translate the response back to the target language if needed
-                    if target_language.lower() != "english":
-                        response = self.llm.generate(f"Translate this to {target_language}: {response}")
+                # Step 6: Translate the response back to the target language if needed
+                if target_language.lower() != "english":
+                    print(f"Translating response to {target_language}...")
+                    response = self.llm.generate(f"Translate this to {target_language}: {response}")
+                    print(f"Translated response: {response}")
 
-                    conversation_text.insert(tk.END, f"Assistant: {response}\n")
-                    self.tts.text_to_speech(response)
+                # Step 7: Display the response
+                conversation_text.insert(tk.END, f"Assistant: {response}\n")
+                conversation_text.see(tk.END)  # Scroll to bottom
 
-                    # Add the response to conversation history
-                    conversation_history.append({"role": "assistant", "content": response})
+                # Step 8: Add the response to conversation history
+                conversation_history.append({"role": "assistant", "content": response})
 
-                    # Keep the conversation history manageable
-                    if len(conversation_history) > 10:
-                        conversation_history = conversation_history[-10:]
+                # Step 9: Play the response
+                print("Playing response...")
+                self.tts.text_to_speech(response)
 
-            except KeyboardInterrupt:
-                conversation_text.insert(tk.END, "\nExiting real-time call assistance...\n")
+                # Update status
+                status_label.config(text="Ready")
             except Exception as e:
+                conversation_text.insert(tk.END, f"Error: {str(e)}\n")
                 messagebox.showerror("Error", f"An error occurred: {str(e)}")
+                status_label.config(text="Error occurred")
+                print(f"Error: {str(e)}")
 
-        start_button = tk.Button(real_time_window, text="Start Assistance", command=start_assistance)
-        start_button.pack(pady=5)
-
+        # Run the recording and response generation in a separate thread
+        threading.Thread(target=record_and_respond).start()
 
 if __name__ == "__main__":
     root = tk.Tk()

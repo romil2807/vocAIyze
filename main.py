@@ -7,6 +7,10 @@ from pathlib import Path
 import logging
 import argparse
 from datetime import datetime
+from dotenv import load_dotenv
+import tkinter as tk
+
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(
