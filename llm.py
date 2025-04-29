@@ -10,6 +10,8 @@ class LLM:
     def __init__(self, api_key: str):
         self.client = OpenAI(api_key=api_key)
         self.knowledge_base = self.load_knowledge_base()
+        self.conversation_context = []
+        self.max_context_length = 10  # Maximum number of messages to keep in context
         logger.info("LLM initialized")
 
     def load_knowledge_base(self) -> dict:
@@ -33,20 +35,40 @@ class LLM:
             logger.error(f"Error loading knowledge base: {str(e)}")
             return {}
 
-    def generate(self, prompt: str) -> str:
+    def generate(self, prompt: str, maintain_context=False) -> str:
         try:
+            messages = [
+                {"role": "system", "content": "You are an AI assistant for business professionals. Provide helpful, accurate, and concise responses."}
+            ]
+            
+            # Add conversation context if needed
+            if maintain_context and self.conversation_context:
+                messages.extend(self.conversation_context)
+                
+            # Add current prompt
+            messages.append({"role": "user", "content": prompt})
+            
             response = self.client.chat.completions.create(
                 model="gpt-4",  # Using the more capable GPT-4 model
-                messages=[
-                    {"role": "system", "content": "You are an AI assistant for business professionals. Provide helpful, accurate, and concise responses."},
-                    {"role": "user", "content": prompt}
-                ],
+                messages=messages,
                 max_tokens=500,
                 temperature=0.7,
                 n=1,
                 stop=None
             )
-            return response.choices[0].message.content.strip()
+            
+            response_text = response.choices[0].message.content.strip()
+            
+            # Update conversation context if needed
+            if maintain_context:
+                self.conversation_context.append({"role": "user", "content": prompt})
+                self.conversation_context.append({"role": "assistant", "content": response_text})
+                
+                # Trim context if needed
+                if len(self.conversation_context) > self.max_context_length:
+                    self.conversation_context = self.conversation_context[-self.max_context_length:]
+                    
+            return response_text
         except Exception as e:
             logger.error(f"Error generating response: {str(e)}")
             return f"Sorry, I encountered an error while processing your request. Please try again later."
@@ -85,6 +107,30 @@ class LLM:
         except Exception as e:
             logger.error(f"Error analyzing text: {str(e)}")
             return {"error": str(e)}
+
+    def detect_sentiment(self, text: str) -> str:
+        """
+        Detect sentiment of the given text (positive, negative, neutral)
+        
+        Args:
+            text: Text to analyze
+            
+        Returns:
+            Sentiment classification
+        """
+        try:
+            prompt = f"Analyze the sentiment of this text and respond with only one word: positive, negative, or neutral. Text: {text}"
+            response = self.generate(prompt)
+            
+            if "positive" in response.lower():
+                return "positive"
+            elif "negative" in response.lower():
+                return "negative"
+            else:
+                return "neutral"
+        except Exception as e:
+            logger.error(f"Error detecting sentiment: {str(e)}")
+            return "neutral"
 
     def detect_unreliable_promises(self, text: str) -> bool:
         prompt = f"Does the following text contain unrealistic or unreliable promises? Answer with 'yes' or 'no' only.\n\nText: {text}"
@@ -171,6 +217,11 @@ class LLM:
             prompt = f"""
             Generate a professional script for a call with the following goal: {goal}.
             Provide the script in {language}.
+            Include:
+            1. A professional greeting
+            2. Key talking points
+            3. Responses to potential objections
+            4. A polite closing
             """
             return self.generate(prompt)
         except Exception as e:
@@ -182,8 +233,59 @@ class LLM:
         Translate text to the target language using OpenAI's GPT model.
         """
         try:
-            prompt = f"Translate the following text to {target_language}: {text}"
+            prompt = f"Translate the following text to {target_language}, keeping the original tone and meaning: {text}"
             return self.generate(prompt)
         except Exception as e:
             logger.error(f"Error translating text: {str(e)}")
             return "Sorry, I couldn't translate the text."
+            
+    def process_conversation_with_context(self, user_input: str, conversation_history: List[Dict[str, str]]) -> str:
+        """
+        Process user input with conversation history for context
+        
+        Args:
+            user_input: The current user input
+            conversation_history: List of previous messages with role and content
+            
+        Returns:
+            Generated response
+        """
+        try:
+            # Create system message
+            system_message = {
+                "role": "system", 
+                "content": "You are a helpful AI assistant that provides accurate, concise, and context-aware responses."
+            }
+            
+            # Prepare conversation for context (limited to last few exchanges)
+            context_window = conversation_history[-10:] if len(conversation_history) > 10 else conversation_history
+            
+            # Create messages array
+            messages = [system_message] + context_window + [{"role": "user", "content": user_input}]
+            
+            # Generate response
+            response = self.client.chat.completions.create(
+                model="gpt-4",
+                messages=messages,
+                max_tokens=500,
+                temperature=0.7
+            )
+            
+            return response.choices[0].message.content.strip()
+            
+        except Exception as e:
+            logger.error(f"Error processing conversation: {str(e)}")
+            return "Sorry, I encountered an error while processing your request."
+            
+    def clear_context(self):
+        """Clear the conversation context"""
+        self.conversation_context = []
+        logger.info("Conversation context cleared")
+        
+    def set_max_context_length(self, length: int):
+        """Set the maximum number of messages to keep in context"""
+        if length > 0:
+            self.max_context_length = length
+            logger.info(f"Max context length set to {length}")
+            return True
+        return False
