@@ -1,140 +1,139 @@
-# vocAIyze: Voice-Powered AI Assistant
+# vocAIyze: Real-Time AI-Powered Multilingual Communication Assistant
 
-vocAIyze is a comprehensive voice-to-voice AI assistant that leverages OpenAI's powerful APIs to enable natural voice interactions. It combines speech-to-text, large language models, and text-to-speech capabilities to create seamless conversational experiences.
+vocAIyze is a voice-powered AI assistant designed to break down language barriers by providing real-time translation and conversation assistance. It helps users prepare for conversations in foreign languages and facilitates live communication between speakers of different languages.
+
+![vocAIyze Logo](https://via.placeholder.com/150?text=vocAIyze)
 
 ## Features
 
-- **Voice Input/Output**: Speak naturally to vocAIyze and hear AI-generated responses in high-quality voices
-- **Advanced Language Processing**: Powered by OpenAI's language models for context-aware responses
-- **Multi-Mode Operation**: Use in interactive conversation mode or batch process files
-- **Business Assistant Capabilities**: 
-  - Task identification and summarization
-  - Detection of unrealistic promises or exaggerations
-  - Knowledge base integration for domain-specific responses
-  - CRM, email, and scheduling simulation (integration points)
+### Pre-Call Preparation
+- Generate professional conversation scripts based on your goals
+- Support for multiple languages
+- Contextually appropriate opening lines, talking points, and closing remarks
 
-## Requirements
+### Real-Time Two-Way Conversation
+- Live speech recognition and translation
+- Support for conversations between speakers of different languages
+- Seamless speaker switching
+- Language auto-detection capabilities
 
-- Python 3.8+ 
-- OpenAI API key
-- PortAudio (for PyAudio)
-- ffmpeg (for audio processing)
+### Intelligent Controls
+- Pause and resume conversations
+- Repeat last translation
+- Edit translations before they're spoken
+- Visual audio level indicators
+
+### Natural Voice Output
+- High-quality text-to-speech in multiple voices
+- Voice customization options
+- Context-aware voice selection based on conversation tone
+
+## System Architecture
+
+vocAIyze is built with a modular architecture consisting of:
+
+- **Speech-to-Text (STT)**: Converts spoken language to text using OpenAI's Whisper API
+- **Language Model (LLM)**: Processes and translates text using OpenAI's GPT models
+- **Text-to-Speech (TTS)**: Converts translated text back to speech using OpenAI's TTS API
+- **GUI**: User-friendly interface built with Tkinter
 
 ## Installation
 
-1. **Clone the repository**:
+### Prerequisites
+- Python 3.8 or higher
+- OpenAI API key
+- Working microphone and speakers
+
+### Setup
+1. Clone the repository
    ```bash
    git clone https://github.com/yourusername/vocAIyze.git
    cd vocAIyze
    ```
 
-2. **Create and activate a virtual environment** (recommended):
-   ```bash
-   python -m venv venv
-   
-   # On Windows:
-   .\venv\Scripts\activate
-   
-   # On macOS/Linux:
-   source venv/bin/activate
-   ```
-
-3. **Install dependencies**:
+2. Install required packages
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **Set up your OpenAI API key**:
-   ```bash
-   # On Windows:
-   set OPENAI_API_KEY=your_api_key_here
-   
-   # On macOS/Linux:
-   export OPENAI_API_KEY=your_api_key_here
+3. Create a `.env` file in the project root and add your OpenAI API key
+   ```
+   OPENAI_API_KEY=your_openai_api_key_here
    ```
 
 ## Usage
 
-### Interactive Mode
-
-Run vocAIyze in interactive conversation mode:
-
+### Running the Application
 ```bash
-python main.py
+python gui.py
 ```
 
-This starts a conversation where you can:
-- Speak to the assistant (it records your voice)
-- Hear the assistant's response
-- Continue the conversation naturally
+### Pre-Call Preparation
+1. Select "Pre-Call Preparation" from the main menu
+2. Enter your call goal and target language
+3. Click "Generate Script"
+4. Review and practice the generated script
 
-To exit, say "exit", "quit", or "goodbye", or press Ctrl+C.
+### Two-Way Conversation
+1. Select "Two-Way Conversation" from the tabbed interface
+2. Set your language and the other speaker's language
+3. Click "Start Conversation"
+4. Speak when prompted and listen to the translations
+5. Use "Switch Speaker" when the other person wants to talk
+6. Use control buttons to manage the conversation flow
 
-### File Processing Mode
+## Project Structure
 
-Process text or audio files:
-
-```bash
-# Convert text file to speech
-python main.py --mode file --input your_text.txt --output response.mp3
-
-# Transcribe audio and get AI response as text and speech
-python main.py --mode file --input recording.mp3 --output response
+```
+VocalAIze/
+├── .env                     # Environment variables (API keys, defaults)
+├── .gitignore               # Git ignore file
+├── gui.py                   # Main GUI application
+├── llm.py                   # Language model interactions
+├── stt.py                   # Speech-to-text functionality
+├── tts.py                   # Text-to-speech functionality
+├── knowledge_base.json      # Knowledge base for contextual responses
+├── requirements.txt         # Project dependencies
+└── README.md                # Project documentation
 ```
 
-### Component Testing
+## Dependencies
 
-Test individual components:
+- **openai**: For GPT, Whisper, and TTS APIs
+- **pyaudio**: For recording audio
+- **pydub**: For audio processing and playback
+- **python-dotenv**: For managing environment variables
+- **tkinter**: For building the GUI
+- **numpy**: For audio signal processing
 
-```bash
-# Test text-to-speech
-python tts.py
+## Future Enhancements
 
-# Test speech-to-text
-python stt.py
-```
+- Mobile application support
+- Multiple speaker tracking for group conversations
+- Specialized domain knowledge (medical, technical, business)
+- Offline mode for basic functionality without internet
+- Conversation history export and analysis
 
-## Architecture
+## Contributing
 
-vocAIyze consists of three main components:
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-1. **Speech-to-Text (STT)**: Converts spoken language to text using OpenAI's Whisper model
-2. **Language Model (LLM)**: Processes text input and generates appropriate responses using OpenAI's GPT models
-3. **Text-to-Speech (TTS)**: Converts text responses back to spoken language using OpenAI's TTS models
-
-## Customization
-
-### Voices
-
-vocAIyze supports multiple voices for text-to-speech:
-- alloy (default)
-- echo
-- fable
-- onyx
-- nova
-- shimmer
-
-To change the voice in code:
-```python
-tts = TextToSpeech(api_key)
-tts.set_voice("nova")
-```
-
-### Knowledge Base
-
-You can customize the knowledge base by editing the `knowledge_base.json` file, which will be created automatically on first run with default values.
-
-## API Integration
-
-vocAIyze is designed to easily integrate with:
-- CRM systems (through the `update_crm` method)
-- Email services (through the `send_email` method)
-- Calendar/scheduling systems (through the `schedule_follow_up` method)
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-[MIT License](LICENSE)
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Contact
+## Acknowledgments
 
-For questions or support, please contact [your-email@example.com](mailto:shahromil2807@gmail.com)
+- OpenAI for their powerful API services
+- The open-source community for inspiration and tools
+- All contributors and testers who helped improve the application
+
+---
+
+Created by [Your Name]
