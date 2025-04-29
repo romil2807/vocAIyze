@@ -2,7 +2,7 @@
 
 vocAIyze is a voice-powered AI assistant designed to break down language barriers by providing real-time translation and conversation assistance. It helps users prepare for conversations in foreign languages and facilitates live communication between speakers of different languages.
 
-![vocAIyze Logo](https://via.placeholder.com/150?text=vocAIyze)
+![vocAIyze Logo](./vocaiyze.png)
 
 ## Features
 
